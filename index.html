@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>😴 ZZZ 睡眠掛機中...</title>
+  <style>
+    body {
+      margin: 0;
+      background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+      color: white;
+      font-family: 'Arial', sans-serif;
+      overflow: hidden;
+    }
+
+    .stars {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      animation: moveStars 100s linear infinite;
+    }
+
+    .zzz {
+      position: absolute;
+      top: 40%;
+      width: 100%;
+      text-align: center;
+      font-size: 6rem;
+      animation: pulse 3s infinite ease-in-out;
+    }
+
+    .message {
+      position: absolute;
+      top: 60%;
+      width: 100%;
+      text-align: center;
+      font-size: 1.5rem;
+      opacity: 0.8;
+    }
+
+    .clock {
+      position: absolute;
+      bottom: 20px;
+      width: 100%;
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: lighter;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.1); }
+    }
+
+    @keyframes moveStars {
+      from { background-position: 0 0; }
+      to { background-position: -1000px 1000px; }
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .audio-toggle {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid white;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="starCanvas"></canvas>
+  <div class="stars"></div>
+  <div class="zzz">Z Z Z …</div>
+  <div class="message">我正在睡覺，請晚點再來 ✨</div>
+  <div class="clock" id="clock"></div>
+  <div class="audio-toggle" onclick="toggleAudio()">🔊 音效開關</div>
+
+  <audio id="bgm" loop autoplay>
+    <source src="https://cdn.pixabay.com/audio/2023/03/01/audio_4b8b8c3e27.mp3" type="audio/mpeg">
+    你的瀏覽器不支援音訊播放。
+  </audio>
+
+  <script>
+    const canvas = document.getElementById('starCanvas');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      stars = [];
+      for (let i = 0; i < 120; i++) {
+        stars.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          radius: Math.random() * 1.5,
+          alpha: Math.random()
+        });
+      }
+    }
+
+    function drawStars() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      stars.forEach(star => {
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, 2 * Math.PI);
+        ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha})`;
+        ctx.fill();
+        star.alpha += (Math.random() - 0.5) * 0.02;
+        star.alpha = Math.max(0.1, Math.min(1, star.alpha));
+      });
+      requestAnimationFrame(drawStars);
+    }
+
+    function updateClock() {
+      const now = new Date();
+      const h = now.getHours().toString().padStart(2, '0');
+      const m = now.getMinutes().toString().padStart(2, '0');
+      const s = now.getSeconds().toString().padStart(2, '0');
+      document.getElementById('clock').innerText = `現在時間：${h}:${m}:${s}`;
+    }
+
+    function toggleAudio() {
+      const audio = document.getElementById('bgm');
+      audio.paused ? audio.play() : audio.pause();
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
+    drawStars();
+    setInterval(updateClock, 1000);
+  </script>
+</body>
+</html>
